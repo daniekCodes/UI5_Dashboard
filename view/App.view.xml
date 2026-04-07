@@ -11,7 +11,20 @@
                     <content>
                         <Table 
                             id="productTable"
-                            noDataText="Loading Products">
+                            noDataText="Loading Products"
+                            items="{/value}">
+                            
+                            <headerToolbar>
+                                <Toolbar>
+                                    <Title text="Products"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField 
+                                        id="searchField"
+                                        placeholder="Search"
+                                        width="300px"
+                                        liveChange=".onSearch"/>
+                                </Toolbar>
+                            </headerToolbar>
                             
                             <columns>
                                 <Column>
@@ -29,8 +42,8 @@
                                 <ColumnListItem>
                                     <cells>
                                         <Text text="{ProductName}"/>
-                                        <Text text="UnitPrice"/>
-                                        <Text text="UnitsInStock"/>
+                                        <Text text="{UnitPrice}"/>
+                                        <Text text="{UnitsInStock}"/>
                                     </cells>
                                 </ColumnListItem>
                             </items>
