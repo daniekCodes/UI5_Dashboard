@@ -12,6 +12,19 @@ sap.ui.define([
             var oModel = new JSONModel();
             oModel.loadData(sUrl);
             this.getView().setModel(oModel);
+
+            oModel.attachRequestCompleted(function() {
+                var aProducts = oModel.getProperty("/value");
+                var iTotalProducts = aProducts.length;
+
+                var fTotalPrice=aProducts.reduce(function (sum, product){
+                    return sum + parseFloat(product.UnitPrice || 0);
+                }, 0);
+                var fAvgPrice = (fTotalPrice / iTotalProducts).toFixed(2);
+
+                oModel.setProperty("/totalProducts", iTotalProducts);
+                oModel.setProperty("/avgPrice", fAvgPrice);
+            });
         },
 
         onSearch: function(oEvent) {

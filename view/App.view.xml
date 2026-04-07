@@ -9,6 +9,41 @@
             <pages>
                 <Page title="Product Dashboard" showNavButton="false">
                     <content>
+                        <VBox class="sapUiSmallMargin">
+                            <HBox>
+                                <GenericTile 
+                                    class="sapUiTinyMarginEnd"
+                                    header="Total Products"
+                                    subheader="in catalog">
+                                    <tileContent>
+                                        <TileContent>
+                                            <content>
+                                                <NumericContent
+                                                value="{/totalProducts}"
+                                                scale="items"
+                                                valueColor="Good"/>
+                                            </content>
+                                        </TileContent>
+                                    </tileContent>
+                                </GenericTile>
+
+                                <GenericTile
+                                    header="Average Price"
+                                    subheader="across all products">
+                                    <tileContent>
+                                        <TileContent>
+                                            <content>
+                                                <NumericContent
+                                                    value="{/avgPrice}"
+                                                    scale="EUR"
+                                                    valueColor="Critical"/>
+                                            </content>
+                                        </TileContent>
+                                    </tileContent>
+                                </GenericTile>
+                            </HBox>
+                        </VBox>
+
                         <Table 
                             id="productTable"
                             noDataText="Loading Products"
@@ -25,7 +60,7 @@
                                         liveChange=".onSearch"/>
                                 </Toolbar>
                             </headerToolbar>
-                            
+
                             <columns>
                                 <Column>
                                     <Text text="Product Name"/>
