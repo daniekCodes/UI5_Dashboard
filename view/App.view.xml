@@ -1,0 +1,43 @@
+<mvc:View
+    controllerName="product.dashboard.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+
+    <Shell>
+        <App id="myApp">
+            <pages>
+                <Page title="Product Dashboard" showNavButton="false">
+                    <content>
+                        <Table 
+                            id="productTable"
+                            noDataText="Loading Products">
+                            
+                            <columns>
+                                <Column>
+                                    <Text text="Product Name"/>
+                                </Column>
+                                <Column>
+                                    <Text text="Unit Price"/>
+                                </Column>
+                                <Column>
+                                    <Text text="In Stock"/>
+                                </Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{ProductName}"/>
+                                        <Text text="UnitPrice"/>
+                                        <Text text="UnitsInStock"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </content>
+                </Page>
+            </pages>
+        </App>
+    </Shell>
+</mvc:View>
