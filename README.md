@@ -26,16 +26,3 @@ It connects to the public Northwind OData API and lets you browse products, sear
 2. Make sure you have the UI5 CLI installed (`npm install -g @ui5/cli`)
 3. Run `ui5 serve` in the project folder
 4. Open `http://localhost:5500`
-
-## Project structure
-webapp/
-├── controller/
-│ ├── App.controller.js
-│ ├── Products.controller.js
-│ └── Detail.controller.js
-├── view/
-│ ├── App.view.xml
-│ ├── Products.view.xml
-│ └── Detail.view.xml
-├── Component.js
-└── manifest.json
