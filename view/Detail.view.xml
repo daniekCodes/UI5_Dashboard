@@ -1,9 +1,10 @@
+<!-- Detail page -->
 <mvc:View
     controllerName="product.dashboard.controller.Detail"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     displayBlock="true">
-
+    <!-- Show back arrow -->
     <Page
         id="detailPage"
         title="Product Detail"
@@ -23,6 +24,7 @@
                     class="sapUiSmallMarginTop">
                     <content>
                         <VBox class="sapUiSmallMargin">
+                        <!-- naming fields -->
                             <Label text="Product ID"/>
                             <Text text="{/ProductID}" class="sapUiSmallMarginBottom"/>
                             <Label text="Units In Stock"/>

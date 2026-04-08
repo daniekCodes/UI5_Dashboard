@@ -10,7 +10,9 @@ sap.ui.define([
         },
 
         init: function() {
+            // Call parent init first
             UIComponent.prototype.init.apply(this,arguments);
+            // Start router
             this.getRouter().initialize();
         }
     });

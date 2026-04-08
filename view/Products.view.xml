@@ -1,3 +1,4 @@
+<!-- Product list page -->
 <mvc:View
     controllerName="product.dashboard.controller.Products"
     xmlns:mvc="sap.ui.core.mvc"
@@ -6,6 +7,7 @@
 
     <Page title="Product Dashboard" showNavButton="false">
         <content>
+        <!-- KPI Tiles -->
             <VBox class="sapUiSmallMargin">
                 <HBox>
                     <GenericTile 
@@ -40,12 +42,12 @@
                     </GenericTile>
                 </HBox>
             </VBox>
-
+            <!-- Products table -->
             <Table
                 id="productTable"   
                 noDataText="No products found"
                 items="{/value}">
-
+                <!-- Search bar -->
                 <headerToolbar>
                     <Toolbar>
                         <Title text="Products"/>
@@ -71,6 +73,7 @@
                 </columns>
 
                 <items>
+                    <!-- Adds arrow at end of each row -->
                     <ColumnListItem press=".onProductPress" type="Navigation">
                         <cells>
                             <Text text="{ProductName}"/>

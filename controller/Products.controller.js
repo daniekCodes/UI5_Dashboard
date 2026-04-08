@@ -8,20 +8,21 @@ sap.ui.define([
 
     return Controller.extend("product.dashboard.controller.App", {
         onInit: function() {
+            // Fetch first 20 products from OData Service
             var sUrl = "https://services.odata.org/V4/Northwind/Northwind.svc/Products?$top=20&$format=json";
             var oModel = new JSONModel();
             oModel.loadData(sUrl);
             this.getView().setModel(oModel);
-
+            // Calculate values
             oModel.attachRequestCompleted(function() {
                 var aProducts = oModel.getProperty("/value");
                 var iTotalProducts = aProducts.length;
-
+                // Calculate all prices and divide for avg
                 var fTotalPrice=aProducts.reduce(function (sum, product){
                     return sum + parseFloat(product.UnitPrice || 0);
                 }, 0);
                 var fAvgPrice = (fTotalPrice / iTotalProducts).toFixed(2);
-
+                // Write back the calculation into the tile
                 oModel.setProperty("/totalProducts", iTotalProducts);
                 oModel.setProperty("/avgPrice", fAvgPrice);
             });
@@ -31,7 +32,7 @@ sap.ui.define([
             var sQuery = oEvent.getParameter("newValue");
             var oTable = this.byId("productTable");
             var oBinding = oTable.getBinding("items");
-
+            // Search function
             if (sQuery) {
                 var oFilter = new Filter("ProductName", FilterOperator.Contains, sQuery);
                 oBinding.filter([oFilter]);
@@ -39,7 +40,7 @@ sap.ui.define([
                 oBinding.filter([]);
             }
         },
-
+        // Get Product ID from clicked item
         onProductPress: function(oEvent) {
             var oItem = oEvent.getSource();
             var oContext = oItem.getBindingContext();
