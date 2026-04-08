@@ -1,0 +1,85 @@
+<mvc:View
+    controllerName="product.dashboard.controller.Products"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+
+    <Page title="Product Dashboard" showNavButton="false">
+        <content>
+            <VBox class="sapUiSmallMargin">
+                <HBox>
+                    <GenericTile 
+                        class="sapUiTinyMarginEnd"
+                        header="Total Products"
+                        subheader="in catalog">
+                        <tileContent>
+                            <TileContent>
+                                <content>
+                                    <NumericContent 
+                                        value="{/totalProducts}"
+                                        scale="items"
+                                        valueColor="Good"/>
+                                </content>
+                            </TileContent>
+                        </tileContent>    
+                    </GenericTile>
+
+                    <GenericTile
+                        header="Average Price"
+                        subheader="across all products">
+                        <tileContent>
+                            <TileContent>
+                                <content>
+                                    <NumericContent 
+                                        value="{/avgPrice}"
+                                        scale="EUR"
+                                        valueColor="Critical"/>
+                                </content>
+                            </TileContent>
+                        </tileContent>
+                    </GenericTile>
+                </HBox>
+            </VBox>
+
+            <Table
+                id="productTable"   
+                noDataText="No products found"
+                items="{/value}">
+
+                <headerToolbar>
+                    <Toolbar>
+                        <Title text="Products"/>
+                        <ToolbarSpacer/>
+                        <SearchField 
+                            id="searchField"
+                            placeholder="Search"
+                            width="300px"
+                            liveChange=".onSearch"/>
+                    </Toolbar>
+                </headerToolbar>
+
+                <columns>
+                    <Column>
+                        <Text text="Product name"/>
+                    </Column>
+                    <Column>
+                        <Text text="Unit Price"/>
+                    </Column>
+                    <Column>
+                        <Text text="In Stock"/>
+                    </Column>
+                </columns>
+
+                <items>
+                    <ColumnListItem press=".onProductPress" type="Navigation">
+                        <cells>
+                            <Text text="{ProductName}"/>
+                            <Text text="{UnitPrice}"/>
+                            <Text text="{UnitsInStock}"/>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

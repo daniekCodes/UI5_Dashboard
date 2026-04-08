@@ -1,6 +1,5 @@
 {
     "_version": "1.58.0",
-
     "sap.app": {
         "id": "product.dashboard",
         "type": "application",
@@ -9,7 +8,6 @@
             "version": "1.0.0"
         }
     },
-
     "sap.ui5": {
         "rootView": {
             "viewName": "product.dashboard.view.App",
@@ -22,6 +20,38 @@
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {}
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "product.dashboard.view",
+                "controlId": "myNavContainer",
+                "controlAggregation": "pages",
+                "async": true
+            },
+            "routes": [
+                {
+                    "name": "products",
+                    "pattern": "",
+                    "target": "products"
+                },
+                {
+                    "name": "detail",
+                    "pattern": "detail/{productId}",
+                    "target": "detail"
+                }
+            ],
+            "targets": {
+                "products": {
+                    "viewName": "Products",
+                    "viewId": "products"
+                },
+                "detail": {
+                    "viewName": "Detail",
+                    "viewId": "detail"
+                }
             }
         }
     }

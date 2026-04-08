@@ -1,0 +1,40 @@
+<mvc:View
+    controllerName="product.dashboard.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    displayBlock="true">
+
+    <Page
+        id="detailPage"
+        title="Product Detail"
+        showNavButton="true"
+        navButtonPress=".onNavBack">
+
+        <content>
+            <VBox class="sapUimediumMargin">
+                <ObjectHeader 
+                    id="productHeader"
+                    title="{ProductName}"
+                    number="{UnitPrice}"
+                    numberUnit="EUR"/>
+
+                <Panel 
+                    headerText="Details"
+                    class="sapUiSmallMarginTop">
+                    <content>
+                        <VBox class="sapUiSmallMargin">
+                            <Label text="Product ID"/>
+                            <Text text="{/ProductID}" class="sapUiSmallMarginBottom"/>
+                            <Label text="Units In Stock"/>
+                            <Text text="{/UnitsInStock}" class="sapUiSmallMarginBottom"/>
+                            <Label text="Units On Order"/>
+                            <Text text="{/UnitsOnOrder}" class="sapUiSmallMarginBottom"/>
+                            <Label text="Quantity Per Unit"/>
+                            <Text text="{/QuantityPerUnit}" class="sapUiSmallMarginBottom"/>
+                        </VBox>
+                    </content>  
+                </Panel>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>
