@@ -1,0 +1,240 @@
+Absolutely. Here's a complete checklist to get back to where you were yesterday.
+
+---
+
+# 1. Update Ubuntu
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
+
+---
+
+# 2. Install Java
+
+```bash
+sudo apt install openjdk-21-jdk -y
+```
+
+Verify:
+
+```bash
+java -version
+```
+
+---
+
+# 3. Install Git
+
+```bash
+sudo apt install git -y
+```
+
+Verify:
+
+```bash
+git --version
+```
+
+---
+
+# 4. Install Docker
+
+Remove old versions:
+
+```bash
+sudo apt remove docker docker-engine docker.io containerd runc
+```
+
+Install prerequisites:
+
+```bash
+sudo apt install ca-certificates curl gnupg -y
+```
+
+Create keyring:
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+```
+
+Add Docker repository:
+
+```bash
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+Install Docker:
+
+```bash
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+```
+
+---
+
+# 5. Allow Docker without sudo
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+Then **log out and back in**, or reboot.
+
+Verify:
+
+```bash
+docker run hello-world
+```
+
+---
+
+# 6. Install kubectl
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+```
+
+```bash
+chmod +x kubectl
+```
+
+```bash
+sudo mv kubectl /usr/local/bin/
+```
+
+Verify:
+
+```bash
+kubectl version --client
+```
+
+---
+
+# 7. Install Minikube
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+```
+
+```bash
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+```
+
+Verify:
+
+```bash
+minikube version
+```
+
+---
+
+# 8. Start Minikube
+
+```bash
+minikube start --driver=docker
+```
+
+Verify:
+
+```bash
+kubectl get nodes
+```
+
+---
+
+# 9. Install GitHub SSH key
+
+Check for keys:
+
+```bash
+ls -la ~/.ssh
+```
+
+Generate key:
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+```
+
+Start SSH agent:
+
+```bash
+eval "$(ssh-agent -s)"
+```
+
+Add key:
+
+```bash
+ssh-add ~/.ssh/id_ed25519
+```
+
+Show public key:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Copy it to **GitHub → Settings → SSH and GPG keys → New SSH key**.
+
+Test:
+
+```bash
+ssh -T git@github.com
+```
+
+Answer:
+
+```text
+yes
+```
+
+---
+
+# 10. Clone the repository
+
+```bash
+git clone git@github.com:username/repository.git
+```
+
+Replace the URL with your repository's SSH URL.
+
+---
+
+# 11. Verify everything
+
+```bash
+java -version
+```
+
+```bash
+git --version
+```
+
+```bash
+docker run hello-world
+```
+
+```bash
+kubectl version --client
+```
+
+```bash
+minikube version
+```
+
+```bash
+kubectl get nodes
+```
+
+---
+
+Once you've done this once today, I'd also recommend **not creating another Hyper-V checkpoint**. Instead, when you get home, we can set up the VM so it syncs cleanly between your home and school PCs without the checkpoint issue that caused this problem.
