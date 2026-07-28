@@ -1,338 +1,97 @@
-# Docker-Kurzanleitung für Teilnehmende
+# Kubernetes – Kurzanleitung für Teilnehmende
 
-## 1. Was ist Docker?
+## Was ist Kubernetes?
 
-Docker verpackt eine Anwendung zusammen mit ihrer Laufzeit und Konfiguration in einen **Container**.
+Kubernetes verwaltet Container-Anwendungen.
 
-```text
-Quellcode
-→ Docker-Image
-→ Docker-Container
-```
+Es sorgt dafür, dass:
 
-Ein Container ist leichter als eine vollständige virtuelle Maschine, weil er den Kernel des Hostsystems mitbenutzt.
+- gewünschte Container laufen
+- ausgefallene Container ersetzt werden
+- Anwendungen erreichbar sind
+- mehrere Instanzen betrieben werden können
+- neue Versionen kontrolliert ausgerollt werden
 
-## 2. Wichtige Begriffe
+## Wichtige Begriffe
 
-### Image
+### Cluster
 
-Ein Image ist die Vorlage für einen Container.
+Gesamtheit der Kubernetes-Rechner.
 
-```text
-Image = Bauplan
-```
+### Node
 
-### Container
+Ein Rechner im Cluster.
 
-Ein Container ist eine laufende Instanz eines Images.
+### Pod
 
-```text
-Container = gestartete Anwendung
-```
+Kleinste ausführbare Einheit. Ein Pod enthält meist einen Container.
 
-### Dockerfile
+### Deployment
 
-Das `Dockerfile` beschreibt, wie das Image gebaut wird.
+Beschreibt Image, Anzahl der Pods und Aktualisierungen.
 
-### Registry
+### Service
 
-Eine Registry speichert Images, zum Beispiel Docker Hub oder GitHub Container Registry.
+Macht Pods über eine stabile Adresse erreichbar.
 
-### Port-Mapping
+### Namespace
 
-```bash
--p 8080:8080
-```
+Trennt Ressourcen logisch.
 
-bedeutet:
+## Typischer Ablauf
 
 ```text
-Host-Port 8080
-→ Container-Port 8080
+Deployment → erzeugt Pods
+Service → macht Pods erreichbar
 ```
 
-## 3. Warum Docker im DevOps-Kontext?
-
-Docker unterstützt:
-
-- reproduzierbare Umgebungen
-- gleiche Laufzeit lokal und in CI
-- einfachere Bereitstellung
-- weniger „Bei mir funktioniert es“-Probleme
-- schnelle Tests
-- gute Grundlage für Kubernetes
-
-## 4. Docker prüfen
+## Wichtige Befehle
 
 ```bash
-docker --version
-systemctl status docker
-docker run hello-world
+kubectl get nodes
+kubectl get pods
+kubectl get services
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl logs PODNAME
+kubectl describe pod PODNAME
+kubectl delete -f k8s/
 ```
 
-## 5. Image für die Task API bauen
+## Healthchecks
 
-Im Projektverzeichnis:
+### Liveness Probe
 
-```bash
-docker build -t task-api:1.0.0 .
-```
+Prüft, ob die Anwendung noch läuft.
 
-Bedeutung:
+### Readiness Probe
+
+Prüft, ob die Anwendung bereit ist, Anfragen anzunehmen.
+
+## Typische Fehler
+
+### `ImagePullBackOff`
+
+Das Image kann nicht geladen werden.
+
+### `CrashLoopBackOff`
+
+Der Container startet und beendet sich wiederholt.
+
+### Pod bleibt `Pending`
+
+Es fehlen Ressourcen oder ein passender Node.
+
+### Service nicht erreichbar
+
+Ports, Labels und Selector prüfen.
+
+## Merksätze
 
 ```text
-docker build
-= Image bauen
-
--t task-api:1.0.0
-= Name und Tag vergeben
-
-.
-= aktuelles Verzeichnis als Build-Kontext
-```
-
-Images anzeigen:
-
-```bash
-docker images
-```
-
-## 6. Container starten
-
-```bash
-docker run --rm -p 8080:8080 task-api:1.0.0
-```
-
-Bedeutung:
-
-```text
---rm
-= Container nach dem Stoppen löschen
-
--p 8080:8080
-= Host-Port mit Container-Port verbinden
-
-task-api:1.0.0
-= zu startendes Image
-```
-
-Anwendung testen:
-
-```bash
-curl http://localhost:8080/api/health
-```
-
-## 7. Im Hintergrund starten
-
-```bash
-docker run -d   --name task-api   -p 8080:8080   task-api:1.0.0
-```
-
-Laufende Container anzeigen:
-
-```bash
-docker ps
-```
-
-Alle Container anzeigen:
-
-```bash
-docker ps -a
-```
-
-## 8. Logs anzeigen
-
-```bash
-docker logs task-api
-```
-
-Live verfolgen:
-
-```bash
-docker logs -f task-api
-```
-
-## 9. Container stoppen und löschen
-
-```bash
-docker stop task-api
-docker start task-api
-docker rm task-api
-```
-
-Erzwingen:
-
-```bash
-docker rm -f task-api
-```
-
-## 10. In den Container schauen
-
-```bash
-docker exec -it task-api sh
-```
-
-Falls Bash vorhanden ist:
-
-```bash
-docker exec -it task-api bash
-```
-
-Beenden:
-
-```bash
-exit
-```
-
-## 11. Docker Compose
-
-Datei:
-
-```text
-compose.yaml
-```
-
-Starten:
-
-```bash
-docker compose up --build
-```
-
-Im Hintergrund:
-
-```bash
-docker compose up -d --build
-```
-
-Logs:
-
-```bash
-docker compose logs -f
-```
-
-Stoppen und entfernen:
-
-```bash
-docker compose down
-```
-
-## 12. Typischer Arbeitsablauf
-
-```bash
-./gradlew clean test
-docker build -t task-api:1.0.0 .
-docker run --rm -p 8080:8080 task-api:1.0.0
-curl http://localhost:8080/api/health
-```
-
-```text
-Tests
-→ Image bauen
-→ Container starten
-→ API prüfen
-```
-
-## 13. Häufige Fehler
-
-### Port bereits belegt
-
-```text
-address already in use
-```
-
-Prüfen:
-
-```bash
-ss -tulpn | grep 8080
-```
-
-Anderen Host-Port verwenden:
-
-```bash
-docker run --rm -p 8081:8080 task-api:1.0.0
-```
-
-Dann:
-
-```bash
-curl http://localhost:8081/api/health
-```
-
-### Container beendet sich sofort
-
-```bash
-docker ps -a
-docker logs CONTAINERNAME
-```
-
-### Image nicht gefunden
-
-```bash
-docker images
-docker build -t task-api:1.0.0 .
-```
-
-### Keine Berechtigung auf Docker
-
-Kurzfristig:
-
-```bash
-sudo docker ps
-```
-
-Dauerhaft:
-
-```bash
-sudo usermod -aG docker "$USER"
-```
-
-Danach neu anmelden.
-
-Achtung: Mitglieder der Docker-Gruppe besitzen weitreichende Rechte auf dem System.
-
-### Anwendung nicht erreichbar
-
-```bash
-docker ps
-docker logs task-api
-curl -v http://localhost:8080/api/health
-```
-
-## 14. Wichtige Befehle
-
-| Befehl | Bedeutung |
-|---|---|
-| `docker build -t NAME:TAG .` | Image bauen |
-| `docker images` | Images anzeigen |
-| `docker run IMAGE` | Container starten |
-| `docker ps` | laufende Container |
-| `docker ps -a` | alle Container |
-| `docker logs NAME` | Logs anzeigen |
-| `docker stop NAME` | Container stoppen |
-| `docker rm NAME` | Container löschen |
-| `docker rmi IMAGE` | Image löschen |
-| `docker exec -it NAME sh` | Shell im Container |
-| `docker compose up` | Compose starten |
-| `docker compose down` | Compose stoppen |
-
-## 15. Merksätze
-
-```text
-Dockerfile
-= Bauanleitung
-
-Image
-= Vorlage
-
-Container
-= laufende Instanz
-
-Port-Mapping
-= Host-Port wird mit Container-Port verbunden
-
-Logs
-= wichtigste Quelle bei Fehlern
-
-Docker Compose
-= mehrere Container gemeinsam verwalten
+Pod = laufende Einheit
+Deployment = gewünschter Zustand
+Service = stabile Erreichbarkeit
+Probe = Gesundheitsprüfung
+kubectl = Steuerungswerkzeug
 ```
