@@ -1,240 +1,338 @@
-Absolutely. Here's a complete checklist to get back to where you were yesterday.
+# Docker-Kurzanleitung für Teilnehmende
 
----
+## 1. Was ist Docker?
 
-# 1. Update Ubuntu
-
-```bash
-sudo apt update
-sudo apt upgrade -y
-```
-
----
-
-# 2. Install Java
-
-```bash
-sudo apt install openjdk-21-jdk -y
-```
-
-Verify:
-
-```bash
-java -version
-```
-
----
-
-# 3. Install Git
-
-```bash
-sudo apt install git -y
-```
-
-Verify:
-
-```bash
-git --version
-```
-
----
-
-# 4. Install Docker
-
-Remove old versions:
-
-```bash
-sudo apt remove docker docker-engine docker.io containerd runc
-```
-
-Install prerequisites:
-
-```bash
-sudo apt install ca-certificates curl gnupg -y
-```
-
-Create keyring:
-
-```bash
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-```
-
-Add Docker repository:
-
-```bash
-echo \
-"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-https://download.docker.com/linux/ubuntu \
-$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-Install Docker:
-
-```bash
-sudo apt update
-sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-```
-
----
-
-# 5. Allow Docker without sudo
-
-```bash
-sudo usermod -aG docker $USER
-```
-
-Then **log out and back in**, or reboot.
-
-Verify:
-
-```bash
-docker run hello-world
-```
-
----
-
-# 6. Install kubectl
-
-```bash
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-```
-
-```bash
-chmod +x kubectl
-```
-
-```bash
-sudo mv kubectl /usr/local/bin/
-```
-
-Verify:
-
-```bash
-kubectl version --client
-```
-
----
-
-# 7. Install Minikube
-
-```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-```
-
-```bash
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-```
-
-Verify:
-
-```bash
-minikube version
-```
-
----
-
-# 8. Start Minikube
-
-```bash
-minikube start --driver=docker
-```
-
-Verify:
-
-```bash
-kubectl get nodes
-```
-
----
-
-# 9. Install GitHub SSH key
-
-Check for keys:
-
-```bash
-ls -la ~/.ssh
-```
-
-Generate key:
-
-```bash
-ssh-keygen -t ed25519 -C "your-email@example.com"
-```
-
-Start SSH agent:
-
-```bash
-eval "$(ssh-agent -s)"
-```
-
-Add key:
-
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
-
-Show public key:
-
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
-
-Copy it to **GitHub → Settings → SSH and GPG keys → New SSH key**.
-
-Test:
-
-```bash
-ssh -T git@github.com
-```
-
-Answer:
+Docker verpackt eine Anwendung zusammen mit ihrer Laufzeit und Konfiguration in einen **Container**.
 
 ```text
-yes
+Quellcode
+→ Docker-Image
+→ Docker-Container
 ```
 
----
+Ein Container ist leichter als eine vollständige virtuelle Maschine, weil er den Kernel des Hostsystems mitbenutzt.
 
-# 10. Clone the repository
+## 2. Wichtige Begriffe
 
-```bash
-git clone git@github.com:username/repository.git
+### Image
+
+Ein Image ist die Vorlage für einen Container.
+
+```text
+Image = Bauplan
 ```
 
-Replace the URL with your repository's SSH URL.
+### Container
 
----
+Ein Container ist eine laufende Instanz eines Images.
 
-# 11. Verify everything
-
-```bash
-java -version
+```text
+Container = gestartete Anwendung
 ```
 
-```bash
-git --version
-```
+### Dockerfile
+
+Das `Dockerfile` beschreibt, wie das Image gebaut wird.
+
+### Registry
+
+Eine Registry speichert Images, zum Beispiel Docker Hub oder GitHub Container Registry.
+
+### Port-Mapping
 
 ```bash
+-p 8080:8080
+```
+
+bedeutet:
+
+```text
+Host-Port 8080
+→ Container-Port 8080
+```
+
+## 3. Warum Docker im DevOps-Kontext?
+
+Docker unterstützt:
+
+- reproduzierbare Umgebungen
+- gleiche Laufzeit lokal und in CI
+- einfachere Bereitstellung
+- weniger „Bei mir funktioniert es“-Probleme
+- schnelle Tests
+- gute Grundlage für Kubernetes
+
+## 4. Docker prüfen
+
+```bash
+docker --version
+systemctl status docker
 docker run hello-world
 ```
 
-```bash
-kubectl version --client
-```
+## 5. Image für die Task API bauen
+
+Im Projektverzeichnis:
 
 ```bash
-minikube version
+docker build -t task-api:1.0.0 .
 ```
+
+Bedeutung:
+
+```text
+docker build
+= Image bauen
+
+-t task-api:1.0.0
+= Name und Tag vergeben
+
+.
+= aktuelles Verzeichnis als Build-Kontext
+```
+
+Images anzeigen:
 
 ```bash
-kubectl get nodes
+docker images
 ```
 
----
+## 6. Container starten
 
-Once you've done this once today, I'd also recommend **not creating another Hyper-V checkpoint**. Instead, when you get home, we can set up the VM so it syncs cleanly between your home and school PCs without the checkpoint issue that caused this problem.
+```bash
+docker run --rm -p 8080:8080 task-api:1.0.0
+```
+
+Bedeutung:
+
+```text
+--rm
+= Container nach dem Stoppen löschen
+
+-p 8080:8080
+= Host-Port mit Container-Port verbinden
+
+task-api:1.0.0
+= zu startendes Image
+```
+
+Anwendung testen:
+
+```bash
+curl http://localhost:8080/api/health
+```
+
+## 7. Im Hintergrund starten
+
+```bash
+docker run -d   --name task-api   -p 8080:8080   task-api:1.0.0
+```
+
+Laufende Container anzeigen:
+
+```bash
+docker ps
+```
+
+Alle Container anzeigen:
+
+```bash
+docker ps -a
+```
+
+## 8. Logs anzeigen
+
+```bash
+docker logs task-api
+```
+
+Live verfolgen:
+
+```bash
+docker logs -f task-api
+```
+
+## 9. Container stoppen und löschen
+
+```bash
+docker stop task-api
+docker start task-api
+docker rm task-api
+```
+
+Erzwingen:
+
+```bash
+docker rm -f task-api
+```
+
+## 10. In den Container schauen
+
+```bash
+docker exec -it task-api sh
+```
+
+Falls Bash vorhanden ist:
+
+```bash
+docker exec -it task-api bash
+```
+
+Beenden:
+
+```bash
+exit
+```
+
+## 11. Docker Compose
+
+Datei:
+
+```text
+compose.yaml
+```
+
+Starten:
+
+```bash
+docker compose up --build
+```
+
+Im Hintergrund:
+
+```bash
+docker compose up -d --build
+```
+
+Logs:
+
+```bash
+docker compose logs -f
+```
+
+Stoppen und entfernen:
+
+```bash
+docker compose down
+```
+
+## 12. Typischer Arbeitsablauf
+
+```bash
+./gradlew clean test
+docker build -t task-api:1.0.0 .
+docker run --rm -p 8080:8080 task-api:1.0.0
+curl http://localhost:8080/api/health
+```
+
+```text
+Tests
+→ Image bauen
+→ Container starten
+→ API prüfen
+```
+
+## 13. Häufige Fehler
+
+### Port bereits belegt
+
+```text
+address already in use
+```
+
+Prüfen:
+
+```bash
+ss -tulpn | grep 8080
+```
+
+Anderen Host-Port verwenden:
+
+```bash
+docker run --rm -p 8081:8080 task-api:1.0.0
+```
+
+Dann:
+
+```bash
+curl http://localhost:8081/api/health
+```
+
+### Container beendet sich sofort
+
+```bash
+docker ps -a
+docker logs CONTAINERNAME
+```
+
+### Image nicht gefunden
+
+```bash
+docker images
+docker build -t task-api:1.0.0 .
+```
+
+### Keine Berechtigung auf Docker
+
+Kurzfristig:
+
+```bash
+sudo docker ps
+```
+
+Dauerhaft:
+
+```bash
+sudo usermod -aG docker "$USER"
+```
+
+Danach neu anmelden.
+
+Achtung: Mitglieder der Docker-Gruppe besitzen weitreichende Rechte auf dem System.
+
+### Anwendung nicht erreichbar
+
+```bash
+docker ps
+docker logs task-api
+curl -v http://localhost:8080/api/health
+```
+
+## 14. Wichtige Befehle
+
+| Befehl | Bedeutung |
+|---|---|
+| `docker build -t NAME:TAG .` | Image bauen |
+| `docker images` | Images anzeigen |
+| `docker run IMAGE` | Container starten |
+| `docker ps` | laufende Container |
+| `docker ps -a` | alle Container |
+| `docker logs NAME` | Logs anzeigen |
+| `docker stop NAME` | Container stoppen |
+| `docker rm NAME` | Container löschen |
+| `docker rmi IMAGE` | Image löschen |
+| `docker exec -it NAME sh` | Shell im Container |
+| `docker compose up` | Compose starten |
+| `docker compose down` | Compose stoppen |
+
+## 15. Merksätze
+
+```text
+Dockerfile
+= Bauanleitung
+
+Image
+= Vorlage
+
+Container
+= laufende Instanz
+
+Port-Mapping
+= Host-Port wird mit Container-Port verbunden
+
+Logs
+= wichtigste Quelle bei Fehlern
+
+Docker Compose
+= mehrere Container gemeinsam verwalten
+```
